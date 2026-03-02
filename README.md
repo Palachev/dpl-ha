@@ -10,12 +10,20 @@ Deep link лендинг для Happ.
 
 Пример:
 
-`https://<ваш-домен>/link/?url_ha=https%3A%2F%2Fpanel.dagdev.ru%2Fsub%2F%D0%BA%D0%BB%D1%8E%D1%87`
+`https://<ваш-домен>/link/?url_ha=https%3A%2F%2Fpanel.dagdev.ru%2Fsub%2FdGdfNzgwMTM3MjQwNiwxNzcwODk1NTI1h-t-qGEnLG`
 
-## Что происходит
+## Какой deeplink формируется
 
-1. Страница пробует открыть приложение прямым deeplink:
-   - `happ://link?url_ha=<encoded_subscription_url>`
-2. Если приложение не открылось, показываются кнопки:
-   - повторно открыть `happ://...`
-   - открыть web-fallback `https://happ.pro/link?...`
+Сервис формирует deeplink строго в формате:
+
+`happ://add/<URL_ПОДПИСКИ>`
+
+Пример:
+
+`happ://add/https://panel.dagdev.ru/sub/dGdfNzgwMTM3MjQwNiwxNzcwODk1NTI1h-t-qGEnLG`
+
+## Шаги для пользователя
+
+1. Установить Happ.
+2. Открыть вашу ссылку `/link/?url_ha=...`.
+3. Если автооткрытие не сработало — нажать кнопку «Открыть подписку в Happ».
