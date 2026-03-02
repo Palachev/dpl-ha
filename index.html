@@ -3,92 +3,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Подключение к Happ</title>
-    <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
-            text-align: center; 
-            padding: 20px;
-            background: #f5f5f5;
-        }
-        .message {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            max-width: 400px;
-            margin: 50px auto;
-        }
-        .button {
-            display: inline-block;
-            background: #007AFF;
-            color: white;
-            padding: 15px 30px;
-            text-decoration: none;
-            border-radius: 10px;
-            margin: 10px;
-            font-weight: bold;
-        }
-        .link-box {
-            background: #f0f0f0;
-            padding: 15px;
-            border-radius: 8px;
-            word-break: break-all;
-            margin: 20px 0;
-            font-size: 12px;
-        }
-        .success { color: #28a745; }
-        .info { color: #666; }
-    </style>
+    <title>Переадресация в Happ</title>
+    <script>
+        const target = `/link/?${window.location.search.replace(/^\?/, '')}`;
+        window.location.replace(target);
+    </script>
 </head>
 <body>
-    <div class="message" id="content">
-        <h2>🔄 Перенаправление в Happ...</h2>
-        <p class="info">Пожалуйста, подождите</p>
-    </div>
-
-    <script>
-        // Получаем ссылку подписки
-        const urlParams = new URLSearchParams(window.location.search);
-        let subLink = urlParams.get('url');
-        
-        // Декодируем ссылку (на случай если там спецсимволы)
-        if (subLink) {
-            try {
-                subLink = decodeURIComponent(subLink);
-            } catch(e) {
-                // Если не получилось декодировать, используем как есть
-            }
-        }
-        
-        if (subLink) {
-            console.log('Подключаемся к:', subLink);
-            
-            // Пытаемся открыть в Happ
-            window.location.href = `happ://${subLink}`;
-            
-            // Если Happ не установлен или не открылся
-            setTimeout(() => {
-                document.getElementById('content').innerHTML = `
-                    <h2>✅ Почти готово!</h2>
-                    <p class="info">Нажмите кнопку ниже, чтобы добавить подписку:</p>
-                    <a href="${subLink}" class="button">🔗 Импортировать в Happ</a>
-                    <p class="info">Если не открывается:</p>
-                    <div class="link-box">${subLink}</div>
-                    <p>
-                        <small>Скопируйте ссылку и вставьте в Happ → Добавить подписку</small>
-                    </p>
-                    <a href="https://happ.pro" class="button" style="background:#28a745;">📥 Установить Happ</a>
-                `;
-            }, 1500);
-            
-        } else {
-            document.getElementById('content').innerHTML = `
-                <h2>❌ Ошибка</h2>
-                <p class="info">Ссылка подписки не найдена</p>
-                <a href="https://happ.pro" class="button">📥 Установить Happ</a>
-            `;
-        }
-    </script>
+    <p>Перенаправление...</p>
 </body>
 </html>
