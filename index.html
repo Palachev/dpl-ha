@@ -3,24 +3,75 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Добавить подписку в Happ</title>
+  <title>DagDev VPN — Добавить подписку в Happ</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background:#f5f5f5; margin:0; padding:20px; }
-    .card { max-width:700px; margin:40px auto; background:#fff; border-radius:14px; padding:24px; box-shadow:0 2px 10px rgba(0,0,0,.08); }
+    :root {
+      --bg: #081a3a;
+      --bg-soft: #0d2653;
+      --card: #112e63;
+      --text: #e9f0ff;
+      --muted: #b4c3e6;
+      --primary: #2f7bff;
+      --success: #27c173;
+      --dark: #1e2c4a;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at top, var(--bg-soft), var(--bg));
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    .header {
+      max-width: 700px;
+      margin: 8px auto 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+    }
+    .card {
+      max-width: 700px;
+      margin: 10px auto 40px;
+      background: var(--card);
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 8px 28px rgba(0,0,0,.25);
+      border: 1px solid rgba(255,255,255,.1);
+    }
     .btn { display:inline-flex; align-items:center; gap:8px; border:none; border-radius:10px; padding:12px 18px; color:#fff; font-weight:600; cursor:pointer; text-decoration:none; margin:6px; }
-    .btn-primary { background:#007AFF; }
-    .btn-success { background:#28a745; }
-    .btn-dark { background:#343a40; }
+    .btn-primary { background: var(--primary); }
+    .btn-success { background: var(--success); }
+    .btn-dark { background: var(--dark); }
     .btn-lg { font-size:17px; padding:13px 22px; }
     .w-5 { width:20px; height:20px; }
-    .muted { color:#666; }
+    .muted { color: var(--muted); }
     .block-buttons { margin-top: 8px; }
-    .box { background:#f0f0f0; border-radius:8px; padding:10px; word-break:break-all; font-size:12px; margin-top:8px; }
-    .status { margin-top:8px; font-size:14px; color:#1f7a1f; min-height:20px; }
-    ol { text-align:left; color:#555; }
+    .box {
+      background: rgba(0,0,0,.2);
+      border-radius:8px;
+      padding:10px;
+      word-break:break-all;
+      font-size:12px;
+      margin-top:8px;
+      border: 1px solid rgba(255,255,255,.12);
+    }
+    .status { margin-top:8px; font-size:14px; color:#9df1c4; min-height:20px; }
+    ol { text-align:left; color: var(--muted); }
   </style>
 </head>
 <body>
+  <div class="header">
+    <div class="brand">DagDev VPN</div>
+    <a class="btn btn-dark" href="https://t.me/kh4ck" target="_blank" rel="noopener noreferrer">💬 Техподдержка</a>
+  </div>
+
   <div class="card" id="app">Загрузка...</div>
 
   <script>
@@ -30,9 +81,7 @@
       });
     }
 
-    function openSubscriptionUrl(url) {
-      window.location.href = url;
-    }
+    function openSubscriptionUrl(url) { window.location.href = url; }
 
     async function copySubscription(text) {
       const status = document.getElementById('copyStatus');
@@ -61,13 +110,8 @@
 
     const params = new URLSearchParams(window.location.search);
     const raw = (params.get('url_ha') || params.get('url') || '').trim();
-    const subscription = raw ? (() => {
-      try { return decodeURIComponent(raw); } catch (e) { return raw; }
-    })() : 'подписка мой ключ';
-
-    const deepLink = subscription.startsWith('happ://add/')
-      ? subscription
-      : `happ://add/${subscription}`;
+    const subscription = raw ? (() => { try { return decodeURIComponent(raw); } catch (e) { return raw; } })() : 'подписка мой ключ';
+    const deepLink = subscription.startsWith('happ://add/') ? subscription : `happ://add/${subscription}`;
 
     const app = document.getElementById('app');
     app.innerHTML = `
@@ -79,9 +123,7 @@
       <div class="block-buttons"><button class="btn btn-primary btn-lg" onclick="openSubscriptionUrl('${esc(deepLink)}')"><svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5v14"></path><path d="M5 12h14"></path></svg> Добавить подписку</button></div>
 
       <p class="muted"><b>Шаг 3:</b> Второй вариант — через буфер обмена</p>
-      <div class="block-buttons">
-        <button class="btn btn-dark btn-lg" onclick="copySubscription('${esc(subscription)}')">📋 Скопировать ссылку подписки</button>
-      </div>
+      <div class="block-buttons"><button class="btn btn-dark btn-lg" onclick="copySubscription('${esc(subscription)}')">📋 Скопировать ссылку подписки</button></div>
       <div id="copyStatus" class="status"></div>
       <ol>
         <li>Откройте Happ</li>
