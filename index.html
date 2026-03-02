@@ -1,90 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Подключение к Happ</title>
+    <title>Добавить подписку в Happ</title>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            text-align: center;
-            padding: 20px;
-            background: #f5f5f5;
-        }
-        .message {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            margin: 50px auto;
-        }
-        .button {
-            display: inline-block;
-            background: #007AFF;
-            color: white;
-            padding: 15px 30px;
-            text-decoration: none;
-            border-radius: 10px;
-            margin: 10px;
-            font-weight: bold;
-        }
-        .link-box {
-            background: #f0f0f0;
-            padding: 15px;
-            border-radius: 8px;
-            word-break: break-all;
-            margin: 20px 0;
-            font-size: 12px;
-        }
-        .info { color: #666; }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background:#f5f5f5; margin:0; padding:20px; }
+        .card { max-width:680px; margin:40px auto; background:#fff; border-radius:14px; padding:24px; box-shadow:0 2px 10px rgba(0,0,0,.08); }
+        .btn { display:inline-flex; align-items:center; gap:8px; border:none; border-radius:10px; padding:12px 18px; color:#fff; font-weight:600; cursor:pointer; text-decoration:none; margin:6px; }
+        .btn-primary { background:#007AFF; }
+        .btn-success { background:#28a745; }
+        .box { background:#f0f0f0; border-radius:8px; padding:10px; word-break:break-all; font-size:12px; margin-top:8px; }
+        .muted { color:#666; }
     </style>
 </head>
 <body>
-    <div class="message" id="content">
-        <h2>🔄 Перенаправление в Happ...</h2>
-        <p class="info">Пожалуйста, подождите</p>
-    </div>
+<div class="card" id="app">Загрузка...</div>
+<script>
+(function () {
+    function esc(s) {
+        return (s || '').replace(/[&<>'"]/g, function (ch) {
+            return ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'})[ch];
+        });
+    }
 
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const rawSubscriptionUrl = urlParams.get('url_ha') || urlParams.get('url');
+    function openSubscriptionUrl(url) {
+        window.location.href = url;
+    }
+    window.openSubscriptionUrl = openSubscriptionUrl;
 
-        if (rawSubscriptionUrl) {
-            let subscriptionUrl = rawSubscriptionUrl;
+    const params = new URLSearchParams(window.location.search);
+    const raw = (params.get('url_ha') || params.get('url') || '').trim();
+    const app = document.getElementById('app');
 
-            try {
-                subscriptionUrl = decodeURIComponent(rawSubscriptionUrl);
-            } catch (e) {
-                // Используем исходное значение, если декодирование не требуется
-            }
+    if (!raw) {
+        app.innerHTML = `
+            <h2>❌ Нет ссылки подписки</h2>
+            <p class="muted">Передайте параметр <b>url_ha</b>.</p>
+            <div class="box">Пример: ${esc(window.location.origin + window.location.pathname)}?url_ha=${encodeURIComponent('https://panel.dagdev.ru/sub/ВАШ_КЛЮЧ')}</div>
+            <a class="btn btn-success" href="https://happ.pro">📥 Установить Happ</a>
+        `;
+        return;
+    }
 
-            const happDeepLink = `https://happ.pro/link?url_ha=${encodeURIComponent(subscriptionUrl)}`;
+    let sub = raw;
+    try { sub = decodeURIComponent(raw); } catch (e) {}
 
-            window.location.href = happDeepLink;
+    const deeplink = sub.startsWith('happ://add/') ? sub : `happ://add/${sub}`;
 
-            setTimeout(() => {
-                document.getElementById('content').innerHTML = `
-                    <h2>✅ Почти готово!</h2>
-                    <p class="info">Если Happ не открылся автоматически, нажмите кнопку ниже:</p>
-                    <a href="${happDeepLink}" class="button">🚀 Открыть в Happ</a>
-                    <p class="info">Ссылка вашей подписки:</p>
-                    <div class="link-box">${subscriptionUrl}</div>
-                    <p><small>Параметр: <b>url_ha</b></small></p>
-                    <a href="https://happ.pro" class="button" style="background:#28a745;">📥 Установить Happ</a>
-                `;
-            }, 1800);
-        } else {
-            document.getElementById('content').innerHTML = `
-                <h2>❌ Ошибка</h2>
-                <p class="info">Ссылка подписки не найдена. Используйте параметр <b>url_ha</b>.</p>
-                <div class="link-box">${window.location.origin}${window.location.pathname}?url_ha=https://panel.example/sub/...</div>
-                <a href="https://happ.pro" class="button">📥 Установить Happ</a>
-            `;
-        }
-    </script>
-</head>
-<body>
-    <p>Перенаправление...</p>
+    app.innerHTML = `
+        <h2>Добавление подписки в Happ</h2>
+        <p class="muted"><b>Шаг 1:</b> Установите приложение Happ</p>
+        <a class="btn btn-success" href="https://happ.pro">📥 Установить Happ</a>
+
+        <p class="muted"><b>Шаг 2:</b> Нажмите кнопку:</p>
+        <button class="btn btn-primary btn-lg" onclick="openSubscriptionUrl('${esc(deeplink)}')"><svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5v14"></path><path d="M5 12h14"></path></svg> Добавить подписку</button>
+
+        <p class="muted">Deeplink:</p>
+        <div class="box">${esc(deeplink)}</div>
+    `;
+})();
+</script>
 </body>
 </html>
