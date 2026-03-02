@@ -42,7 +42,20 @@
       box-shadow: 0 10px 30px rgba(0,0,0,.28);
       border: 1px solid rgba(255,255,255,.12);
     }
-    .btn { display:inline-flex; align-items:center; gap:8px; border:none; border-radius:10px; padding:12px 18px; color:#fff; font-weight:600; cursor:pointer; text-decoration:none; margin:6px; }
+    .store-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .btn {
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border:none;
+      border-radius:10px;
+      padding:12px 18px;
+      color:#fff;
+      font-weight:600;
+      cursor:pointer;
+      text-decoration:none;
+      margin:6px 0;
+    }
     .btn-primary { background: var(--primary); }
     .btn-success { background: var(--success); }
     .btn-dark { background: var(--dark); }
@@ -50,18 +63,7 @@
     .w-5 { width:20px; height:20px; }
     .muted { color: var(--muted); }
     .block-buttons { margin-top: 8px; }
-    .support-inline { margin-top: 6px; }
-    .box {
-      background: rgba(0,0,0,.24);
-      border-radius:8px;
-      padding:10px;
-      word-break:break-all;
-      font-size:12px;
-      margin-top:8px;
-      border: 1px solid rgba(255,255,255,.12);
-    }
-    .status { margin-top:8px; font-size:14px; color:#9df1c4; min-height:20px; }
-    ol { text-align:left; color: var(--muted); }
+    .support-inline { margin-top: 10px; }
   </style>
 </head>
 <body>
@@ -80,31 +82,7 @@
     }
 
     function openSubscriptionUrl(url) { window.location.href = url; }
-
-    async function copySubscription(text) {
-      const status = document.getElementById('copyStatus');
-      try {
-        if (navigator.clipboard && window.isSecureContext) {
-          await navigator.clipboard.writeText(text);
-        } else {
-          const area = document.createElement('textarea');
-          area.value = text;
-          area.style.position = 'fixed';
-          area.style.left = '-9999px';
-          document.body.appendChild(area);
-          area.focus();
-          area.select();
-          document.execCommand('copy');
-          document.body.removeChild(area);
-        }
-        status.textContent = '✅ Подписка скопирована. Откройте Happ → + → Вставить из буфера обмена';
-      } catch (e) {
-        status.textContent = '❌ Не удалось скопировать автоматически. Скопируйте ссылку вручную ниже.';
-      }
-    }
-
     window.openSubscriptionUrl = openSubscriptionUrl;
-    window.copySubscription = copySubscription;
 
     const params = new URLSearchParams(window.location.search);
     const raw = (params.get('url_ha') || params.get('url') || '').trim();
@@ -114,26 +92,21 @@
     const app = document.getElementById('app');
     app.innerHTML = `
       <h2>Добавить подписку в Happ</h2>
-      <p class="muted"><b>Шаг 1:</b> Скачайте Happ</p>
-      <a class="btn btn-success btn-lg" href="https://happ.pro">📥 Скачать Happ</a>
+      <p class="muted"><b>Шаг 1:</b> Установите Happ на ваше устройство</p>
+      <div class="store-buttons">
+        <a class="btn btn-success" href="https://apps.apple.com/ru/app/v2raytun/id6476628951?l=en-GB" target="_blank" rel="noopener noreferrer">🍎 Скачать для iPhone</a>
+        <a class="btn btn-success" href="https://play.google.com/store/apps/details?id=com.v2raytun.android&hl=ru" target="_blank" rel="noopener noreferrer">🤖 Скачать для Android</a>
+        <a class="btn btn-success" href="https://storage.fcknrockn.net/v2RayTun_Setup.exe" target="_blank" rel="noopener noreferrer">🪟 Скачать для Windows</a>
+        <a class="btn btn-success" href="https://happ.pro" target="_blank" rel="noopener noreferrer">💻 Скачать для MacBook</a>
+      </div>
 
-      <p class="muted"><b>Шаг 2:</b> Импорт через deeplink</p>
-      <div class="block-buttons"><button class="btn btn-primary btn-lg" onclick="openSubscriptionUrl('${esc(deepLink)}')"><svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5v14"></path><path d="M5 12h14"></path></svg> Добавить подписку</button></div>
-
-      <p class="muted"><b>Шаг 3:</b> Второй вариант — через буфер обмена</p>
-      <div class="block-buttons"><button class="btn btn-dark btn-lg" onclick="copySubscription('${esc(subscription)}')">📋 Скопировать ссылку подписки</button></div>
-      <div id="copyStatus" class="status"></div>
-      <ol>
-        <li>Откройте Happ</li>
-        <li>Нажмите <b>+</b> в правом верхнем углу</li>
-        <li>Нажмите «Вставить из буфера обмена»</li>
-      </ol>
-
-      <p class="muted">Ссылка подписки:</p>
-      <div class="box">${esc(subscription)}</div>
-
-      <p class="muted">Сформированный deeplink:</p>
-      <div class="box">${esc(deepLink)}</div>
+      <p class="muted"><b>Шаг 2:</b> Импортируйте подписку</p>
+      <div class="block-buttons">
+        <button class="btn btn-primary btn-lg" onclick="openSubscriptionUrl('${esc(deepLink)}')">
+          <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+          Добавить подписку
+        </button>
+      </div>
 
       <p class="muted support-inline">Нужна помощь? <a class="btn btn-dark" href="https://t.me/kh4ck" target="_blank" rel="noopener noreferrer">💬 Техподдержка</a></p>
     `;
