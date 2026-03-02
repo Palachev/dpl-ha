@@ -1,65 +1,100 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Добавить подписку в Happ</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background:#f5f5f5; margin:0; padding:20px; }
-        .card { max-width:680px; margin:40px auto; background:#fff; border-radius:14px; padding:24px; box-shadow:0 2px 10px rgba(0,0,0,.08); }
-        .btn { display:inline-flex; align-items:center; gap:8px; border:none; border-radius:10px; padding:12px 18px; color:#fff; font-weight:600; cursor:pointer; text-decoration:none; margin:6px; }
-        .btn-primary { background:#007AFF; }
-        .btn-success { background:#28a745; }
-        .box { background:#f0f0f0; border-radius:8px; padding:10px; word-break:break-all; font-size:12px; margin-top:8px; }
-        .muted { color:#666; }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Добавить подписку в Happ</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background:#f5f5f5; margin:0; padding:20px; }
+    .card { max-width:700px; margin:40px auto; background:#fff; border-radius:14px; padding:24px; box-shadow:0 2px 10px rgba(0,0,0,.08); }
+    .btn { display:inline-flex; align-items:center; gap:8px; border:none; border-radius:10px; padding:12px 18px; color:#fff; font-weight:600; cursor:pointer; text-decoration:none; margin:6px; }
+    .btn-primary { background:#007AFF; }
+    .btn-success { background:#28a745; }
+    .btn-dark { background:#343a40; }
+    .btn-lg { font-size:17px; padding:13px 22px; }
+    .w-5 { width:20px; height:20px; }
+    .muted { color:#666; }
+    .block-buttons { margin-top: 8px; }
+    .box { background:#f0f0f0; border-radius:8px; padding:10px; word-break:break-all; font-size:12px; margin-top:8px; }
+    .status { margin-top:8px; font-size:14px; color:#1f7a1f; min-height:20px; }
+    ol { text-align:left; color:#555; }
+  </style>
 </head>
 <body>
-<div class="card" id="app">Загрузка...</div>
-<script>
-(function () {
+  <div class="card" id="app">Загрузка...</div>
+
+  <script>
     function esc(s) {
-        return (s || '').replace(/[&<>'"]/g, function (ch) {
-            return ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'})[ch];
-        });
+      return (s || '').replace(/[&<>'"]/g, function (ch) {
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'})[ch];
+      });
     }
 
     function openSubscriptionUrl(url) {
-        window.location.href = url;
+      window.location.href = url;
     }
+
+    async function copySubscription(text) {
+      const status = document.getElementById('copyStatus');
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const area = document.createElement('textarea');
+          area.value = text;
+          area.style.position = 'fixed';
+          area.style.left = '-9999px';
+          document.body.appendChild(area);
+          area.focus();
+          area.select();
+          document.execCommand('copy');
+          document.body.removeChild(area);
+        }
+        status.textContent = '✅ Подписка скопирована. Откройте Happ → + → Вставить из буфера обмена';
+      } catch (e) {
+        status.textContent = '❌ Не удалось скопировать автоматически. Скопируйте ссылку вручную ниже.';
+      }
+    }
+
     window.openSubscriptionUrl = openSubscriptionUrl;
+    window.copySubscription = copySubscription;
 
     const params = new URLSearchParams(window.location.search);
     const raw = (params.get('url_ha') || params.get('url') || '').trim();
+    const subscription = raw ? (() => {
+      try { return decodeURIComponent(raw); } catch (e) { return raw; }
+    })() : 'подписка мой ключ';
+
+    const deepLink = subscription.startsWith('happ://add/')
+      ? subscription
+      : `happ://add/${subscription}`;
+
     const app = document.getElementById('app');
-
-    if (!raw) {
-        app.innerHTML = `
-            <h2>❌ Нет ссылки подписки</h2>
-            <p class="muted">Передайте параметр <b>url_ha</b>.</p>
-            <div class="box">Пример: ${esc(window.location.origin + window.location.pathname)}?url_ha=${encodeURIComponent('https://panel.dagdev.ru/sub/ВАШ_КЛЮЧ')}</div>
-            <a class="btn btn-success" href="https://happ.pro">📥 Установить Happ</a>
-        `;
-        return;
-    }
-
-    let sub = raw;
-    try { sub = decodeURIComponent(raw); } catch (e) {}
-
-    const deeplink = sub.startsWith('happ://add/') ? sub : `happ://add/${sub}`;
-
     app.innerHTML = `
-        <h2>Добавление подписки в Happ</h2>
-        <p class="muted"><b>Шаг 1:</b> Установите приложение Happ</p>
-        <a class="btn btn-success" href="https://happ.pro">📥 Установить Happ</a>
+      <h2>Добавить подписку в Happ</h2>
+      <p class="muted"><b>Шаг 1:</b> Скачайте Happ</p>
+      <a class="btn btn-success btn-lg" href="https://happ.pro">📥 Скачать Happ</a>
 
-        <p class="muted"><b>Шаг 2:</b> Нажмите кнопку:</p>
-        <button class="btn btn-primary btn-lg" onclick="openSubscriptionUrl('${esc(deeplink)}')"><svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5v14"></path><path d="M5 12h14"></path></svg> Добавить подписку</button>
+      <p class="muted"><b>Шаг 2:</b> Импорт через deeplink</p>
+      <div class="block-buttons"><button class="btn btn-primary btn-lg" onclick="openSubscriptionUrl('${esc(deepLink)}')"><svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5v14"></path><path d="M5 12h14"></path></svg> Добавить подписку</button></div>
 
-        <p class="muted">Deeplink:</p>
-        <div class="box">${esc(deeplink)}</div>
+      <p class="muted"><b>Шаг 3:</b> Второй вариант — через буфер обмена</p>
+      <div class="block-buttons">
+        <button class="btn btn-dark btn-lg" onclick="copySubscription('${esc(subscription)}')">📋 Скопировать ссылку подписки</button>
+      </div>
+      <div id="copyStatus" class="status"></div>
+      <ol>
+        <li>Откройте Happ</li>
+        <li>Нажмите <b>+</b> в правом верхнем углу</li>
+        <li>Нажмите «Вставить из буфера обмена»</li>
+      </ol>
+
+      <p class="muted">Ссылка подписки:</p>
+      <div class="box">${esc(subscription)}</div>
+
+      <p class="muted">Сформированный deeplink:</p>
+      <div class="box">${esc(deepLink)}</div>
     `;
-})();
-</script>
+  </script>
 </body>
 </html>
