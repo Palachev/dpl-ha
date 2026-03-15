@@ -3,67 +3,118 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DagDev VPN — Добавить подписку в Happ</title>
+  <title>DagDev VPN — Импорт подписки</title>
   <style>
     :root {
-      --bg: #061733;
-      --bg-soft: #0b2550;
-      --card: #0f2a5a;
-      --text: #ecf2ff;
-      --muted: #b8c7ea;
-      --primary: #2f7bff;
+      --bg-1: #061733;
+      --bg-2: #0a2148;
+      --card: rgba(16, 39, 84, 0.82);
+      --text: #eef3ff;
+      --muted: #b9c8ea;
+      --primary: #3b82ff;
       --success: #27c173;
       --dark: #1a2a49;
+      --line: rgba(255,255,255,.14);
+      --shadow: 0 18px 38px rgba(0,0,0,.32);
     }
+
     * { box-sizing: border-box; }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(180deg, var(--bg-soft), var(--bg));
-      color: var(--text);
       margin: 0;
-      padding: 20px;
       min-height: 100vh;
+      padding: 20px;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background:
+        radial-gradient(900px 500px at -10% -20%, #1a3d7d55, transparent 70%),
+        radial-gradient(700px 500px at 110% -10%, #2f7bff33, transparent 65%),
+        linear-gradient(160deg, var(--bg-2), var(--bg-1));
     }
+
+    .header,
+    .card { max-width: 760px; margin-left: auto; margin-right: auto; }
+
     .header {
-      max-width: 700px;
-      margin: 10px auto 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-top: 8px;
+      margin-bottom: 14px;
       gap: 12px;
     }
-    .brand { font-size: 30px; font-weight: 800; letter-spacing: 0.5px; }
+
+    .brand { font-size: 30px; font-weight: 800; letter-spacing: .4px; }
+
     .card {
-      max-width: 700px;
-      margin: 0 auto 40px;
       background: var(--card);
-      border-radius: 16px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
       padding: 24px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.28);
-      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      animation: fadeIn .5s ease;
     }
-    .store-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tabs {
+      display: inline-flex;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 4px;
+      background: rgba(0,0,0,.18);
+      margin-bottom: 16px;
+      gap: 4px;
+    }
+
+    .tab {
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      padding: 9px 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .tab.active {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(59,130,255,.35);
+    }
+
     .btn {
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      border:none;
-      border-radius:10px;
-      padding:12px 18px;
-      color:#fff;
-      font-weight:600;
-      cursor:pointer;
-      text-decoration:none;
-      margin:6px 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 18px;
+      margin: 6px 0;
+      cursor: pointer;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 650;
+      transition: transform .15s ease, box-shadow .2s ease, opacity .2s ease;
     }
-    .btn-primary { background: var(--primary); }
-    .btn-success { background: var(--success); }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-primary { background: var(--primary); box-shadow: 0 8px 20px rgba(59,130,255,.34); }
+    .btn-success { background: var(--success); box-shadow: 0 8px 20px rgba(39,193,115,.26); }
     .btn-dark { background: var(--dark); }
-    .btn-lg { font-size:17px; padding:13px 22px; }
-    .w-5 { width:20px; height:20px; }
+    .btn-lg { font-size: 17px; padding: 13px 22px; }
+
     .muted { color: var(--muted); }
+    .store-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
     .block-buttons { margin-top: 8px; }
-    .support-inline { margin-top: 10px; }
+    .support-inline { margin-top: 12px; }
   </style>
 </head>
 <body>
@@ -81,35 +132,64 @@
       });
     }
 
-    function openSubscriptionUrl(url) { window.location.href = url; }
+    function openSubscriptionUrl(url) {
+      window.location.href = url;
+    }
     window.openSubscriptionUrl = openSubscriptionUrl;
 
     const params = new URLSearchParams(window.location.search);
     const raw = (params.get('url_ha') || params.get('url') || '').trim();
     const subscription = raw ? (() => { try { return decodeURIComponent(raw); } catch (e) { return raw; } })() : 'подписка мой ключ';
-    const deepLink = subscription.startsWith('happ://add/') ? subscription : `happ://add/${subscription}`;
 
-    const app = document.getElementById('app');
-    app.innerHTML = `
-      <h2>Добавить подписку в Happ</h2>
-      <p class="muted"><b>Шаг 1:</b> Установите Happ на ваше устройство</p>
-      <div class="store-buttons">
-        <a class="btn btn-success" href="https://apps.apple.com/us/app/happ-proxy-utility/id6504287215" target="_blank" rel="noopener noreferrer">🍎 Скачать для iPhone</a>
-        <a class="btn btn-success" href="https://play.google.com/store/apps/details?id=com.happproxy" target="_blank" rel="noopener noreferrer">🤖 Скачать для Android</a>
-        <a class="btn btn-success" href="https://www.happ.su/main/ru" rel="noopener noreferrer">🪟 Скачать для Windows</a>
-        <a class="btn btn-success" https://apps.apple.com/us/app/happ-proxy-utility/id6504287215" target="_blank" rel="noopener noreferrer">💻 Скачать для MacBook</a>
-      </div>
+    const apps = {
+      happ: {
+        title: 'Happ',
+        buttonText: 'Добавить подписку в Happ',
+        deeplink: subscription.startsWith('happ://add/') ? subscription : `happ://add/${subscription}`
+      },
+      hiddify: {
+        title: 'Hiddify',
+        buttonText: 'Добавить подписку в Hiddify',
+        deeplink: subscription.startsWith('hiddify://add/') ? subscription : `hiddify://add/${subscription}`
+      }
+    };
 
-      <p class="muted"><b>Шаг 2:</b> Импортируйте подписку</p>
-      <div class="block-buttons">
-        <button class="btn btn-primary btn-lg" onclick="openSubscriptionUrl('${esc(deepLink)}')">
-          <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
-          Добавить подписку
-        </button>
-      </div>
+    let activeApp = 'happ';
 
-      <p class="muted support-inline">Нужна помощь? <a class="btn btn-dark" href="https://t.me/kh4ck" target="_blank" rel="noopener noreferrer">💬 Техподдержка</a></p>
-    `;
+    function render() {
+      const config = apps[activeApp];
+      const app = document.getElementById('app');
+      app.innerHTML = `
+        <div class="tabs">
+          <button class="tab ${activeApp === 'happ' ? 'active' : ''}" onclick="switchApp('happ')">Happ</button>
+          <button class="tab ${activeApp === 'hiddify' ? 'active' : ''}" onclick="switchApp('hiddify')">Hiddify</button>
+        </div>
+
+        <h2>Импорт подписки — ${config.title}</h2>
+        <p class="muted"><b>Шаг 1:</b> Установите приложение</p>
+        <div class="store-buttons">
+          <a class="btn btn-success" href="https://apps.apple.com/ru/app/v2raytun/id6476628951?l=en-GB" target="_blank" rel="noopener noreferrer">🍎 iPhone</a>
+          <a class="btn btn-success" href="https://play.google.com/store/apps/details?id=com.v2raytun.android&hl=ru" target="_blank" rel="noopener noreferrer">🤖 Android</a>
+          <a class="btn btn-success" href="https://storage.fcknrockn.net/v2RayTun_Setup.exe" target="_blank" rel="noopener noreferrer">🪟 Windows</a>
+          <a class="btn btn-success" href="https://happ.pro" target="_blank" rel="noopener noreferrer">💻 MacBook</a>
+        </div>
+
+        <p class="muted"><b>Шаг 2:</b> Импортируйте подписку</p>
+        <div class="block-buttons">
+          <button class="btn btn-primary btn-lg" onclick="openSubscriptionUrl('${esc(config.deeplink)}')">${config.buttonText}</button>
+        </div>
+
+        <p class="muted support-inline">Нужна помощь? <a class="btn btn-dark" href="https://t.me/kh4ck" target="_blank" rel="noopener noreferrer">💬 Техподдержка</a></p>
+      `;
+    }
+
+    function switchApp(key) {
+      activeApp = key;
+      render();
+    }
+
+    window.switchApp = switchApp;
+    render();
   </script>
 </body>
 </html>
