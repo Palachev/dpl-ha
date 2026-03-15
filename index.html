@@ -145,12 +145,24 @@
       happ: {
         title: 'Happ',
         buttonText: 'Добавить подписку в Happ',
-        deeplink: subscription.startsWith('happ://add/') ? subscription : `happ://add/${subscription}`
+        deeplink: subscription.startsWith('happ://add/') ? subscription : `happ://add/${subscription}`,
+        installButtons: [
+          { label: '🍎 Happ для iPhone', href: 'https://apps.apple.com/app/id6504287215' },
+          { label: '🤖 Happ для Android', href: 'https://play.google.com/store/apps/details?id=com.happproxy&hl=ru' },
+          { label: '🪟 Happ для Windows', href: 'https://happ.pro' },
+          { label: '💻 Happ для MacBook', href: 'https://happ.pro' }
+        ]
       },
       hiddify: {
         title: 'Hiddify',
         buttonText: 'Добавить подписку в Hiddify',
-        deeplink: subscription.startsWith('hiddify://add/') ? subscription : `hiddify://add/${subscription}`
+        deeplink: subscription.startsWith('hiddify://add/') ? subscription : `hiddify://add/${subscription}`,
+        installButtons: [
+          { label: '🍎 Hiddify для iPhone', href: 'https://apps.apple.com/app/id6596777532' },
+          { label: '🤖 Hiddify для Android', href: 'https://play.google.com/store/apps/details?id=app.hiddify.com&hl=ru' },
+          { label: '🪟 Hiddify для Windows', href: 'https://hiddify.com' },
+          { label: '💻 Hiddify для MacBook', href: 'https://hiddify.com' }
+        ]
       }
     };
 
@@ -158,6 +170,10 @@
 
     function render() {
       const config = apps[activeApp];
+      const installButtonsHtml = config.installButtons
+        .map((btn) => `<a class="btn btn-success" href="${btn.href}" target="_blank" rel="noopener noreferrer">${btn.label}</a>`)
+        .join('');
+
       const app = document.getElementById('app');
       app.innerHTML = `
         <div class="tabs">
@@ -167,12 +183,7 @@
 
         <h2>Импорт подписки — ${config.title}</h2>
         <p class="muted"><b>Шаг 1:</b> Установите приложение</p>
-        <div class="store-buttons">
-          <a class="btn btn-success" href="https://apps.apple.com/ru/app/v2raytun/id6476628951?l=en-GB" target="_blank" rel="noopener noreferrer">🍎 iPhone</a>
-          <a class="btn btn-success" href="https://play.google.com/store/apps/details?id=com.v2raytun.android&hl=ru" target="_blank" rel="noopener noreferrer">🤖 Android</a>
-          <a class="btn btn-success" href="https://storage.fcknrockn.net/v2RayTun_Setup.exe" target="_blank" rel="noopener noreferrer">🪟 Windows</a>
-          <a class="btn btn-success" href="https://happ.pro" target="_blank" rel="noopener noreferrer">💻 MacBook</a>
-        </div>
+        <div class="store-buttons">${installButtonsHtml}</div>
 
         <p class="muted"><b>Шаг 2:</b> Импортируйте подписку</p>
         <div class="block-buttons">

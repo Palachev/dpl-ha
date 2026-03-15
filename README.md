@@ -15,7 +15,13 @@
 ## Что есть на странице
 
 1. Вкладки приложений: **Happ** и **Hiddify**
-2. Кнопки установки для iPhone / Android / Windows / MacBook
+2. Правильные кнопки установки по выбранной вкладке:
+   - Happ iPhone: `https://apps.apple.com/app/id6504287215`
+   - Happ Android: `https://play.google.com/store/apps/details?id=com.happproxy&hl=ru`
+   - Happ Windows/MacBook: `https://happ.pro`
+   - Hiddify iPhone: `https://apps.apple.com/app/id6596777532`
+   - Hiddify Android: `https://play.google.com/store/apps/details?id=app.hiddify.com&hl=ru`
+   - Hiddify Windows/MacBook: `https://hiddify.com`
 3. Кнопка импорта подписки:
    - Happ: `happ://add/<URL_ПОДПИСКИ>`
    - Hiddify: `hiddify://add/<URL_ПОДПИСКИ>`
